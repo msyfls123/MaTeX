@@ -1,5 +1,5 @@
 import * as express from 'express'
-import document from './document'
+import pdf from './pdf'
 
 const app = express()
 
@@ -10,7 +10,7 @@ app.get('/', function (req, res) {
 app.get('/pdf', function (req, res) {
     res.setHeader('Content-disposition', 'inline; filename="hello.pdf"')
     res.setHeader('Content-Type', 'application/pdf')
-    document(res)
+    pdf(res)
 })
 
 app.listen(3000, function () {

@@ -1,31 +1,46 @@
 import * as PDFDocument from 'pdfkit'
-import { Response } from 'express'
 
-export default function document(res: Response) {
-    const doc = new PDFDocument({
-        autoFirstPage: false
+type TextOptions = PDFKit.Mixins.TextOptions
+type Texts = Array<{
+  text: string,
+  options: TextOptions
+}>
+
+export default class EnhancedPDFDocument<T = PDFKit.PDFDocumentOptions> extends PDFDocument {
+  _lineGap?: number
+  _initOptions: (options: TextOptions) => any
+  _text: (text: string, x: number, y: number, options: TextOptions, line:() => void) => number
+  [x: string]: any;
+  constructor(options: T) {
+    super(options)
+  }
+  heightOfTexts(texts: Texts) {
+    const { x, y } = this;
+
+    texts.forEach(({ text, options }) => {
+      options = this._initOptions(options);
+      options.height = Infinity; // don't break pages
+
+      const lineGap = options.lineGap || this._lineGap || 0;
+      this._text(text, this.x, this.y, options, () => {
+        return (this.y += this.currentLineHeight(true) + lineGap);
+      });
     })
-    doc.pipe(res)
-    doc.addPage({
-        margins: {
-            top: 0,
-            bottom: 0,
-            left: 0,
-            right: 0
-        }
+
+    const height = this.y - y;
+    this.x = x;
+    this.y = y;
+
+    return height;
+  }
+  texts(texts: Texts) {
+    texts.forEach(({ text, options }) => {
+      this.text(text, options)
     })
-
-    doc.font('fonts/SourceHanSansCN-Regular.ttf')
-
-    const img = doc.openImage('media/arkdome.jpg')
-    const imgHeight = img.height / img.width * 300
-    doc.image(img, 0, 0, {width: 300})
-
-    doc.fontSize(11)
-    const textOptions = ['大蛋是本喵，本喵是大蛋。1%abc '.repeat(30), 300, 0]
-    const textHeight = doc.heightOfString(...textOptions)
-    doc.text(...textOptions)
-    doc.text('喵喵喵', 0)
-    doc.text(`${imgHeight} ${textHeight}`)
-    doc.end()
+  }
+  moveCursorTo(x?: number, y?: number) {
+    if (typeof x !== undefined) { this.x = x }
+    if (typeof y !== undefined) { this.y = y }
+    return this
+  }
 }
