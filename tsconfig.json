@@ -2,8 +2,10 @@
   "compilerOptions": {
     "target": "es6",
     "module": "commonjs",
-    "outDir": "dist",
-    "sourceMap": true
+    "noImplicitAny": true,
+    "lib": ["esnext", "dom"],
+    "jsx": "preserve",
+    "sourceMap": false,
   },
   "include": [
     "src/**/*.ts"

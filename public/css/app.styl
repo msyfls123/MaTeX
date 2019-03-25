@@ -1,0 +1,20 @@
+.main
+  display: flex
+  width: calc(100% - 40px)
+  margin: 20px auto
+  justify-content: space-between
+  align-items: flex-start
+  > *
+    flex: 0 0 calc(50% - 10px)
+  #output
+    height: calc(100vh - 40px)
+    box-shadow: 0 0 7px 0 #999
+  #root
+    word-break: break-all
+    &::before
+      content: ''
+      display: block
+      width: 50px
+      height: 50px
+      margin: 10px auto
+      background: url(../pic/avatar.jpg) no-repeat center / cover
