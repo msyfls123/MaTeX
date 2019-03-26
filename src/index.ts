@@ -1,11 +1,12 @@
 import * as express from 'express'
 import * as webpack from 'webpack'
 import * as path from 'path'
+// @ts-ignore
 import * as config from '../webpack.config'
 import pdf from './pdf'
 
 const app = express()
-const compiler = webpack(config as any)
+const compiler = webpack(config as any) as any
 const isProduction = process.env.NODE_ENV === 'production'
 
 app.get('/pdf', function (req, res) {
@@ -25,7 +26,7 @@ if(isProduction){
   app.use(require('webpack-hot-middleware')(compiler));
   app.use('*', function (req, res, next) {
     var filename = path.join(compiler.outputPath, 'index.html');
-    compiler.outputFileSystem.readFile(filename, function(err, result){
+    compiler.outputFileSystem.readFile(filename, function(err: any, result: string){
       if (err) {
         return next(err);
       }

@@ -2,11 +2,21 @@ import PDFDocument from './document'
 import { Response } from 'express'
 
 const exampleText = '大蛋是本喵，本喵是大蛋。1%abc '
-const texts = [
+const texts: {
+  text: string
+  options: {
+    continued?: boolean
+    oblique?: boolean
+    underline?: boolean
+    link?: string
+    stroke?: boolean
+    fill?: boolean
+  }
+}[] = [
   { text: exampleText, options: { continued: true, oblique: true }},
   { text: exampleText, options: { continued: true, oblique: false, underline: true }},
   { text: exampleText, options: { continued: true, underline: false, link: 'https://douban.com'}},
-  { text: exampleText, options: { continued: true, stroke: true, link: null, fill: true }},
+  { text: exampleText, options: { continued: true, stroke: true, link: undefined, fill: true }},
   { text: exampleText, options: { continued: true, stroke: false, underline: true }},
   { text: exampleText, options: { underline: false, link: 'https://douban.com'}},
 ]

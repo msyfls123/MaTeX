@@ -12,7 +12,7 @@ Web server transform markdown to pdf.
   - [ ] emphasize / stroke / color
   - [ ] link
 - [ ] rich-text pagination
-- [ ] `webpack` plugin for static files
+- [x] `webpack` plugin for static files
 - [ ] `react` layout with pdf preview and editing
 - [ ] save & load image with `IndexDB`
 - [ ] cache documents in `localStorage` or `IndexDB`
