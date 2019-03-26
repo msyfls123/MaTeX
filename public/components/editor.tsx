@@ -7,8 +7,10 @@ export default class Editor extends Component {
   render() {
     return (
       <SimpleMDE
+        className="markdown-editor"
         options={{
           autoDownloadFontAwesome: false,
+          spellChecker: false,
           toolbar: [
             "bold",
             "italic",
