@@ -2,9 +2,12 @@
   "compilerOptions": {
     "target": "es6",
     "module": "commonjs",
+    "moduleResolution": "node",
     "noImplicitAny": true,
+    // "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
     "lib": ["esnext", "dom"],
-    "jsx": "preserve",
+    "jsx": "react",
     "sourceMap": false,
   },
   "include": [

@@ -1,8 +1,8 @@
-import * as express from 'express'
-import * as webpack from 'webpack'
-import * as path from 'path'
+import express from 'express'
+import webpack from 'webpack'
+import path from 'path'
 // @ts-ignore
-import * as config from '../webpack.config'
+import config from '../webpack.config'
 import pdf from './pdf'
 
 const app = express()

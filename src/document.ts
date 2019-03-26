@@ -1,4 +1,4 @@
-import * as PDFDocument from 'pdfkit'
+import PDFDocument from 'pdfkit'
 
 type TextOptions = PDFKit.Mixins.TextOptions
 type Texts = Array<{
@@ -6,12 +6,12 @@ type Texts = Array<{
   options: TextOptions
 }>
 
-export default class EnhancedPDFDocument<T = PDFKit.PDFDocumentOptions> extends PDFDocument {
+export default class EnhancedPDFDocument extends PDFDocument {
   _lineGap?: number
   _initOptions: (options: TextOptions) => any
   _text: (text: string, x: number, y: number, options: TextOptions, line:() => void) => number
   [x: string]: any;
-  constructor(options: T) {
+  constructor(options: PDFKit.PDFDocumentOptions) {
     super(options)
   }
   heightOfTexts(texts: Texts) {

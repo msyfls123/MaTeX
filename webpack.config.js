@@ -10,7 +10,7 @@ const isProduction = process.env.NODE_ENV === 'production'
 const config = {
   mode: isProduction ? 'production' : 'development',
   entry: [
-    path.join(publicPath, 'app.ts')
+    path.join(publicPath, 'app')
   ],
   output: {
     path: distPath,
@@ -38,6 +38,12 @@ const config = {
         { loader: 'style-loader' },
         { loader: 'css-loader' },
         { loader: 'stylus-loader' },
+      ]
+    }, {
+      test: /.css$/,
+      use: [
+        { loader: 'style-loader' },
+        { loader: 'css-loader' },
       ]
     }, {
       test: /\.(png|jpg|gif)$/,
