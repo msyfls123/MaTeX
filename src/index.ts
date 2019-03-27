@@ -4,6 +4,7 @@ import path from 'path'
 // @ts-ignore
 import config from '../webpack.config'
 import pdf from './pdf'
+import printer from './printer'
 
 const app = express()
 const compiler = webpack(config as any) as any
@@ -13,6 +14,12 @@ app.get('/pdf', function (req, res) {
     res.setHeader('Content-Disposition', 'inline; filename="hello.pdf"')
     res.setHeader('Content-Type', 'application/pdf')
     pdf(res)
+})
+
+app.get('/printer', function (req, res) {
+    res.setHeader('Content-Disposition', 'inline; filename="hello.pdf"')
+    res.setHeader('Content-Type', 'application/pdf')
+    printer(res)
 })
 
 if(isProduction){
