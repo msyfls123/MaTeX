@@ -64,6 +64,10 @@ const config = {
     }]
   },
   resolve: {
+    modules: [
+      './public',
+      './node_modules',
+    ],
     extensions: ['.json', '.js', '.ts', '.tsx', '.css']
   },
   plugins: [
@@ -75,10 +79,16 @@ const config = {
   optimization: {
     splitChunks: {
       cacheGroups: {
-        commons: {
+        vendor: {
           test: /[\\/]node_modules[\\/]/,
-          name: 'vendors',
+          name: 'vendor',
           chunks: 'all'
+        },
+        vfs: {
+          test: /vfs_fonts/,
+          name: 'vfs',
+          chunks: 'all',
+          enforce: true,
         }
       }
     }

@@ -1,7 +1,7 @@
 import React from 'react'
 import { render } from 'react-dom'
 
-import { loadPdf } from './helpers/pdf-loader'
+import printer from './helpers/printer'
 import Root from './root'
 import './css/app.styl'
 
@@ -22,7 +22,7 @@ const output = document.getElementById('output') as HTMLIFrameElement
 // root.appendChild(link)
 
 function refresh() {
-  loadPdf().then((url) => {
+  printer().then((url) => {
     output.src = url
     // link.href = url
   })
