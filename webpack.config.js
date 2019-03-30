@@ -15,7 +15,7 @@ const config = {
   output: {
     path: distPath,
     filename: '[name].[hash].js',
-    publicPath: '/',
+    publicPath: './',
   },
    module: {
     rules: [{
@@ -72,7 +72,7 @@ const config = {
   },
   plugins: [
     new HtmlWebpackPlugin({
-      title: 'Cycle.js is awesome!',
+      title: 'MaTeX',
       template: path.join(__dirname, 'template/index.html'),
     })
   ],
