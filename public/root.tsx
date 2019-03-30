@@ -1,13 +1,13 @@
 import React from 'react'
 import { hot } from 'react-hot-loader/root'
 
-import Editor from './components/editor'
+import Markdown from './containers/MaTeX'
 
 function Root() {
   return (
-    <div>
-      <Editor/>
-    </div>
+    <>
+      <Markdown/>
+    </>
   )
 }
 

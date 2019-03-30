@@ -1,4 +1,4 @@
-.main
+#root
   display: flex
   width: calc(100% - 40px)
   margin: 20px auto
@@ -6,12 +6,12 @@
   align-items: flex-start
   > *
     flex: 0 0 calc(50% - 10px)
-    overflow: hidden
-  #output
     height: calc(100vh - 40px)
+    overflow-x: hidden
+  #pdf
     box-shadow: 0 0 7px 0 #999
-  #root
-    word-break: break-all
+  .documents
+    overflow-y: auto
     &::before
       content: ''
       display: block

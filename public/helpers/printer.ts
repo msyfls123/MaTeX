@@ -3,29 +3,30 @@ import pdfMake from 'pdfmake/build/pdfmake'
 import pdfFonts from '../../fonts/vfs_fonts'
 const image = require('!url-loader!../../media/arkdome.jpg')
 
+import {
+  fonts,
+  styles,
+  defaultStyle,
+} from '../constants/styles'
 
 let prevPdfObjectUrl: string
 
 pdfMake.vfs = pdfFonts
-pdfMake.fonts = {
-  SourceHanSans: {
-    'normal': 'SourceHanSansCN-Regular.ttf',
-    'bold': 'SourceHanSansCN-Bold.ttf',
-    'italics': 'SourceHanSansCN-Regular.ttf',
-    'bolditalics': 'SourceHanSansCN-Bold.ttf',
-  }
-}
+pdfMake.fonts = fonts
 
-export default function printer(docDefinition?: pdfMake.TDocumentDefinitions): Promise<string> {
-  docDefinition = docDefinition || {
-    content: [
+export default function printer(content?: pdfMake.Content): Promise<string> {
+  const docDefinition = {
+    content: content || [
       {
         columns: [
-          { text: 'aaa'.repeat(160), width: 200 },
+          { text: [
+            { text: 'aaa' },
+            { text: 'bbb' },
+          ], width: 200 },
           { text: '草草草草'.repeat(20), width: '*' },
         ],
         columnGap: 10,
-        style: 'example',
+        style: ['example', 'block'],
       },
       {
         style: 'tableExample',
@@ -34,7 +35,7 @@ export default function printer(docDefinition?: pdfMake.TDocumentDefinitions): P
           body: [
             [{
               image: image,
-              fit: [200, 200],
+              fit: [200, 400],
             }, '擦擦擦'.repeat(150)],
           ]
         },
@@ -42,20 +43,8 @@ export default function printer(docDefinition?: pdfMake.TDocumentDefinitions): P
       },
       '123'
     ],
-    defaultStyle: {
-      font: 'SourceHanSans',
-    },
-    styles: {
-      tableExample: {
-        margin: [0, 55, 0, 25],
-        padding: [10, 10, 20, 20],
-      },
-      example: {
-        color: '#64aeda',
-        bold: true,
-        fontSize: 18
-      }
-    },
+    defaultStyle,
+    styles,
   }
   return new Promise((resolve) => {
     const doc = pdfMake.createPdf(docDefinition) as any

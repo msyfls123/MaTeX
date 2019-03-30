@@ -1,24 +1,38 @@
 import React, { Component } from 'react'
 import SimpleMDE from 'react-simplemde-editor'
 
-import { parse } from '../helpers/markdown'
-
+import { DocumentBlock } from '../constants'
+import Image from './Image'
 
 import 'easymde/dist/easymde.min.css'
-import './editor.styl'
+import './Editor.styl'
 
-export default class Editor extends Component {
+type EditorProps = {
+  onChange: (payload: Partial<DocumentBlock>) => void
+  onRemove: () => void
+  value?: DocumentBlock
+}
+
+export default class Editor extends Component<EditorProps> {
   render() {
-    return (
+    const { value, onChange } = this.props
+    return <div className="document">
+      <a onClick={() => {
+        if (window.confirm('删除该文档块？')) {
+          this.props.onRemove()
+        }
+      }} className="btn-remove">●</a>
       <SimpleMDE
         className="markdown-editor"
-        onChange={(t) => console.log(parse(t))}
+        value={value.markdown}
+        onChange={(markdown) => onChange({markdown})}
         options={{
           autoDownloadFontAwesome: false,
           spellChecker: false,
           toolbar: [
             "bold",
             "italic",
+            "code",
             "heading",
             "|",
             "quote",
@@ -32,6 +46,10 @@ export default class Editor extends Component {
           ],
         }}
       />
-    )
+      <Image
+        dataURL={value.image}
+        setImage={(image) => onChange({image})}
+      />
+    </div>
   }
 }
