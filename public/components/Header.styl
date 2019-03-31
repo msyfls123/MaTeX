@@ -1,0 +1,43 @@
+.matex-header
+  input
+    border: 1px solid #ddd
+  .input-title
+    width: 100%
+    height: 30px
+    line-height: @height
+    font-size: 18px
+    box-sizing: border-box
+    padding: 0 10px
+  .description
+    padding: 10px 5px
+    background: #f0f9f9
+    // border-top: 1px solid #ddd
+    // border-bottom: 1px solid #ddd
+    li
+      display: flex
+      margin-bottom: 10px
+      list-style: none
+      padding: 0
+      justify-content: space-between
+      align-items: center
+      input
+        flex: 1 1 10px
+        margin-right: 10px
+        padding: 0 10px
+        min-width: 0
+        line-height: 24px
+        &:nth-child(4)
+          flex: 1 1 180px
+      a
+        margin-right: 3px
+        flex: none
+        width: 20px
+        height: 20px
+        line-height: @height - 2
+        border-radius: @height
+        background: #e6e6e6
+        text-align: center
+        cursor: pointer
+        &:hover
+          color: #fff
+          background: #a9a9a9

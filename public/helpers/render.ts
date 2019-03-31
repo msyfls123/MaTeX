@@ -1,11 +1,11 @@
 import Token from 'markdown-it/lib/token'
-import { Content } from 'pdfmake/build/pdfmake'
+import { Content, Table } from 'pdfmake/build/pdfmake'
 import cloneDeep from 'lodash/cloneDeep'
 import without from 'lodash/without'
 import chunk from 'lodash/chunk'
 
 import { DocumentBlock } from '../constants'
-import { BLOCK_STYLE } from '../constants/styles'
+import { BLOCK_STYLE, tableLayouts } from '../constants/styles'
 import { parse } from './markdown'
 
 export function renderDocuments(documents: DocumentBlock[]) {
@@ -13,22 +13,49 @@ export function renderDocuments(documents: DocumentBlock[]) {
     if (d.image) {
       return {
         columns: [
-          { stack: render(parse(d.markdown)), width: '*' },
-          { image: d.image, fit: [200, 400], width: 200 },
+          { stack: renderBlocks(parse(d.markdown)), width: '*' },
+          { image: d.image, fit: [260, 400], width: 260 },
         ],
         columnGap: 10,
         style: [BLOCK_STYLE],
       }
     } else {
       return {
-        stack: render(parse(d.markdown)),
+        stack: renderBlocks(parse(d.markdown)),
         style: [BLOCK_STYLE],
       }
     }
   })
 }
 
-export default function render(tokens: Token[]): Content[] {
+export function render(
+  documents: DocumentBlock[],
+  title: string,
+  description: string[][],
+): Content[] {
+  const contents = []
+  if (title) {
+    contents.push({
+      text: title,
+      style: ['block', 'h1'],
+    })
+  }
+  const filteredDescription = description.filter((d) => !!d.join(''))
+  if (filteredDescription.length) {
+    contents.push({
+      table: {
+        widths: [70, 70, 70, '*'],
+        body: cloneDeep(filteredDescription),
+      } as unknown as Table,
+      layout: tableLayouts.description,
+      style: ['table', 'description'],
+    })
+  }
+  contents.push(renderDocuments(documents))
+  return contents
+}
+
+export function renderBlocks(tokens: Token[]): Content[] {
   let styles: string[] = [BLOCK_STYLE]
   const contents: Content[] = []
   let inBulletList: boolean = false

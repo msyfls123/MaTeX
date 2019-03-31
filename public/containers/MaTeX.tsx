@@ -6,34 +6,58 @@ import Editor from '../components/Editor'
 import { DocumentBlock } from '../constants'
 import printer from '../helpers/printer'
 import { mockedDocuments } from '../constants/mock-data'
-import { renderDocuments } from '../helpers/render'
+import { renderDocuments, render } from '../helpers/render'
+
+import Header, { HeaderProps, emptyDescription } from '../components/Header'
 
 type MaTeXState = {
   documents: DocumentBlock[]
   pdfObjectURL?: string
-}
+  autoPreview: boolean
+} & Pick<HeaderProps, 'title' | 'description'>
 
 export default class MaTeX extends Component<{}, MaTeXState> {
   state: MaTeXState = {
+    title: '',
+    description: [emptyDescription],
     documents: mockedDocuments,
-    pdfObjectURL: undefined
+    pdfObjectURL: undefined,
+    autoPreview: true,
   }
   static emptyDocumentBlock: DocumentBlock = {
     markdown: ''
   }
   componentDidMount() {
     this.generatePDF()
-    console.log(
-      require('../helpers/render').renderDocuments(this.state.documents)
-    )
-    const contents = this.state.documents.map((d) =>
-      require('../helpers/markdown').parse(d.markdown)
-    )
-    contents.forEach((i) => i.forEach((d: any) => console.log(d)))
+    if (process.env.NODE_ENV !== 'production') {
+      console.log(
+        renderDocuments(this.state.documents)
+      )
+      const contents = this.state.documents.map((d) =>
+        require('../helpers/markdown').parse(d.markdown)
+      )
+      contents.forEach((i) => i.forEach((d: any) => console.log(d)))
+    }
   }
+  generatePDF = () => {
+    const { documents, title, description } = this.state
+    const content = render(documents, title, description)
+    printer(content).then((url) => {
+      this.setState({
+        pdfObjectURL: url
+      })
+    })
+  }
+  debounceGeneratePdf = debounce(this.generatePDF, 1000)
   componentDidUpdate(_: {}, prevState: MaTeXState) {
-    if (!compare(this.state.documents, prevState.documents)) {
-      this.generatePDF()
+    if (
+      this.state.autoPreview && (
+        !compare(this.state.documents, prevState.documents) ||
+        this.state.title !== prevState.title ||
+        !compare(this.state.description, prevState.description)
+      )
+    ) {
+      this.debounceGeneratePdf()
     }
   }
   addEmptyDocument = () => {
@@ -60,19 +84,34 @@ export default class MaTeX extends Component<{}, MaTeXState> {
       ]
     })
   }
-  generatePDF = debounce(() => {
-    const { documents } = this.state
-    const content = renderDocuments(documents)
-    printer(content).then((url) => {
-      this.setState({
-        pdfObjectURL: url
-      })
-    })
-  }, 1000)
   render() {
-    const { documents, pdfObjectURL } = this.state
+    const {
+      documents,
+      pdfObjectURL,
+      title,
+      description,
+      autoPreview,
+    } = this.state
     return <>
-      <div className="documents">
+      <div
+        className="auto-preview"
+      >
+        <label><input
+          type="checkbox"
+          checked={autoPreview}
+          onChange={() => this.setState({
+            autoPreview: !autoPreview
+          })}
+        />
+        自动预览</label>
+        <button onClick={this.generatePDF}>手动预览</button>
+      </div>
+      <div className="main"><div className="documents">
+        <Header
+          {...{title, description}}
+          onChangeTitle={(title) => this.setState({title})}
+          onChangeDescription={(description) => this.setState({description})}
+        />
         {documents.map((d, i) => (
           <Editor
             key={`editor-${i}`}
@@ -85,7 +124,7 @@ export default class MaTeX extends Component<{}, MaTeXState> {
           + 文档块
         </button>
       </div>
-      <iframe id="pdf" src={pdfObjectURL} frameBorder="0"></iframe>
+      <iframe id="pdf" src={pdfObjectURL} frameBorder="0"></iframe></div>
     </>
   }
 }

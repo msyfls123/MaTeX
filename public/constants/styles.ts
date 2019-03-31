@@ -1,4 +1,4 @@
-import { Style } from 'pdfmake/build/pdfmake'
+import { Style, TableLayoutFunctions } from 'pdfmake/build/pdfmake'
 
 export const fonts = {
   SourceHanSans: {
@@ -73,10 +73,37 @@ export const styles: Record<string, Style> = {
   },
   table: {
     margin: [0, 10, 0, 10],
-    alignment: 'center'
   },
   code_block: {
     margin: [10, 10, 10, 10],
     color: '#a9a9a9',
+  },
+  description: {
+    alignment: 'left',
+    margin: [0, 10, 0, 30],
+  }
+}
+
+export const tableLayouts: Record<string, TableLayoutFunctions> = {
+  description: {
+    hLineWidth(i, node) {
+			if (i === 0 || i === node.table.body.length) {
+				return 1;
+			} else {
+        return 0
+      }
+    },
+    vLineWidth(i, node) {
+      return 0
+    },
+    paddingTop(i, node) {
+      return i === 0 ? 8 : 0
+    },
+    paddingBottom(i, node) {
+      return (i === node.table.body.length - 1) ? 8 : 4;
+    },
+    hLineColor(i, node) {
+      return '#ddd'
+    }
   }
 }

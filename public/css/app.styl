@@ -1,21 +1,37 @@
 #root
-  display: flex
-  width: calc(100% - 40px)
-  margin: 20px auto
-  justify-content: space-between
-  align-items: flex-start
-  > *
+  position: relative
+  .main
+    display: flex
+    width: calc(100% - 40px)
+    margin: 20px auto
+    justify-content: space-between
+    align-items: flex-start
+  .documents
+  #pdf
     flex: 0 0 calc(50% - 10px)
     height: calc(100vh - 40px)
     overflow-x: hidden
+    box-sizing: border-box
   #pdf
     box-shadow: 0 0 7px 0 #999
   .documents
+    margin-top: 20px
     overflow-y: auto
-    &::before
-      content: ''
-      display: block
-      width: 50px
-      height: 50px
-      margin: 10px auto
-      background: url(../pic/avatar.jpg) no-repeat center / cover
+    height: calc(100vh - 60px)
+    border: 1px solid #ddd
+    padding: 10px
+    border-radius: 5px
+  .auto-preview
+    position: absolute
+    top: 0
+    left: 20px
+    font-size: 12px
+    display: flex
+    label
+      display: inline-flex
+      margin-right: 15px
+    button
+      padding: 0 2px
+      height: 18px
+      font-size: 12px
+      line-height: 1

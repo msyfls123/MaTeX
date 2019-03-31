@@ -15,7 +15,7 @@ const config = {
   output: {
     path: distPath,
     filename: '[name].[hash].js',
-    publicPath: './',
+    publicPath: isProduction ? './' : '/',
   },
    module: {
     rules: [{
