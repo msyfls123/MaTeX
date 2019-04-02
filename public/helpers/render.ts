@@ -7,22 +7,23 @@ import chunk from 'lodash/chunk'
 import { DocumentBlock } from '../constants'
 import { BLOCK_STYLE, tableLayouts } from '../constants/styles'
 import { parse } from './markdown'
+import { getImage } from './image'
 
 export function renderDocuments(documents: DocumentBlock[]) {
   return documents.map((d) => {
-    if (d.image) {
+    if (typeof d.image !== 'undefined') {
       return {
         columns: [
           { stack: renderBlocks(parse(d.markdown)), width: '*' },
-          { image: d.image, fit: [260, 400], width: 260 },
+          { image: getImage(d.image), fit: [240, 400], width: 240 },
         ],
-        columnGap: 10,
-        style: [BLOCK_STYLE],
+        columnGap: 20,
+        style: ['document'],
       }
     } else {
       return {
         stack: renderBlocks(parse(d.markdown)),
-        style: [BLOCK_STYLE],
+        style: ['document'],
       }
     }
   })
@@ -48,7 +49,7 @@ export function render(
         body: cloneDeep(filteredDescription),
       } as unknown as Table,
       layout: tableLayouts.description,
-      style: ['table', 'description'],
+      style: ['description'],
     })
   }
   contents.push(renderDocuments(documents))
@@ -58,10 +59,9 @@ export function render(
 export function renderBlocks(tokens: Token[]): Content[] {
   let styles: string[] = [BLOCK_STYLE]
   const contents: Content[] = []
-  let inBulletList: boolean = false
-  let inOrderedList: boolean = false
-  let ul: Content[] = []
-  let ol: Content[] = []
+  let inList = false
+  let list: Content[] = []
+  let currListIndex: any[] = []
   let inTable: boolean = false
   let table: Content[] = []
   let tableColumnCount = 0
@@ -69,10 +69,8 @@ export function renderBlocks(tokens: Token[]): Content[] {
   const getContainer = () => {
     if (inTable) {
       return table
-    } else if (inBulletList) {
-      return ul
-    } else if (inOrderedList) {
-      return ol
+    } else if (inList) {
+      return currListIndex.reduce((acc, key) => acc[key], list)
     } else {
       return contents
     }
@@ -95,33 +93,49 @@ export function renderBlocks(tokens: Token[]): Content[] {
         styles = without(styles, token.tag)
         break
       case 'blockquote_open':
+        styles = without(styles, 'block')
         styles.push('blockquote')
         break
       case 'blockquote_close':
+        styles.push('block')
         styles = without(styles, 'blockquote')
         break
+      // list start
       case 'bullet_list_open':
-        inBulletList = true
+      case 'ordered_list_open':
+        inList = true
+        if (token.level) {
+          const listContainer = getContainer()
+          const tag = token.tag // ul, ol
+          listContainer.push({ [tag]: [], style: 'list' })
+          currListIndex.push(listContainer.length - 1)
+          currListIndex.push(tag)
+        }
+        break
+      case 'list_item_open':
+        const listContainer1 = getContainer()
+        listContainer1.push([])
+        currListIndex.push(listContainer1.length - 1)
+        break
+      case 'list_item_close':
+        currListIndex.pop()
         break
       case 'bullet_list_close':
-        inBulletList = false
-        contents.push({
-          ul: cloneDeep(ul),
-          style: 'ul',
-        })
-        ul = []
-        break
-      case 'ordered_list_open':
-        inOrderedList = true
-        break
       case 'ordered_list_close':
-        inOrderedList = false
-        contents.push({
-          ol: cloneDeep(ol),
-          style: 'ol',
-        })
-        ol = []
+        if (currListIndex.length) {
+          currListIndex.pop()
+          currListIndex.pop()
+        } else {
+          inList = false
+          getContainer().push({
+            [token.tag]: cloneDeep(list),
+            style: BLOCK_STYLE
+          })
+          list = []
+          currListIndex = []
+        }
         break
+      // list end
       case 'table_open':
         inTable = true
         break
@@ -132,8 +146,10 @@ export function renderBlocks(tokens: Token[]): Content[] {
         inTable = false
         contents.push({
           table: {
+            headerRows: 1,
             body: cloneDeep(chunk(table, tableColumnCount)),
           },
+          layout: tableLayouts.table,
           style: 'table',
         })
         table = []
@@ -142,7 +158,7 @@ export function renderBlocks(tokens: Token[]): Content[] {
       case 'hr':
         contents.push({
           text: '',
-          pageBreak: 'after'
+          pageBreak: 'before'
         })
         break
       case 'fence':

@@ -1,10 +1,12 @@
 import React, { Component, ChangeEventHandler } from 'react'
 
+import { addImage, getImage } from '../helpers/image'
+
 import './Image.styl'
 
 type ImageProps = {
-  dataURL?: string
-  setImage: (dataURL?: string) => void
+  imgId?: number
+  setImage: (imgId?: number) => void
 }
 
 export default class Image extends Component<ImageProps> {
@@ -14,15 +16,16 @@ export default class Image extends Component<ImageProps> {
     const fr = new FileReader()
     if (file) {
       fr.onload = () => {
-        setImage(fr.result as string)
+        setImage(addImage(fr.result as string))
       }
       fr.readAsDataURL(file)
     }
   }
   render() {
-    const { dataURL, setImage } = this.props
+    const { imgId, setImage } = this.props
+    const hasImage = typeof imgId !== 'undefined'
     return <div className="image-selector">
-      {!dataURL && <div className="image-input">
+      {!hasImage && <div className="image-input">
         插图
         <input
           type="file"
@@ -30,10 +33,10 @@ export default class Image extends Component<ImageProps> {
           onChange={this.parseImage}
         />
       </div>}
-      {dataURL && <div
+      {hasImage && <div
         className="image-preview"
       >
-        <img className="image" src={dataURL}/>
+        <img className="image" src={getImage(imgId)}/>
         <a className="remove" onClick={() => {
           if(window.confirm('删除该图片？')) {
             setImage()

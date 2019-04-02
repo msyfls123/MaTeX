@@ -29,6 +29,9 @@ export const styles: Record<string, Style> = {
   [BLOCK_STYLE]: {
     margin: [0, 0, 0, 10],
   },
+  document: {
+    margin: [0, 0, 0, 20],
+  },
   h1: {
     fontSize: 24,
     bold: true,
@@ -61,25 +64,23 @@ export const styles: Record<string, Style> = {
   },
   blockquote: {
     color: '#999',
-    decoration: 'underline',
-    decorationStyle: 'wavy',
-    decorationColor: '#a9a9a9'
+    margin: [10, 0, 10, 10],
+    // decoration: 'underline',
+    // decorationStyle: 'wavy',
+    // decorationColor: '#a9a9a9'
   },
-  ul: {
-    margin: [0, 10, 0, 10],
-  },
-  ol: {
-    margin: [0, 10, 0, 10],
+  list: {
+    margin: [0, 5, 0, 5],
   },
   table: {
     margin: [0, 10, 0, 10],
   },
   code_block: {
-    margin: [10, 10, 10, 10],
+    margin: [10, 0, 10, 10],
     color: '#a9a9a9',
+    background: "#e5f6ff",
   },
   description: {
-    alignment: 'left',
     margin: [0, 10, 0, 30],
   }
 }
@@ -105,5 +106,33 @@ export const tableLayouts: Record<string, TableLayoutFunctions> = {
     hLineColor(i, node) {
       return '#ddd'
     }
+  },
+  table: {
+    hLineWidth(i, node) {
+			if (i === 0 || i === node.table.body.length) {
+				return 2
+			} else {
+        return 1
+      }
+    },
+    vLineWidth(i, node) {
+      if (i === 0 || i === node.table.widths.length) {
+        return 2
+      } else {
+        return 1
+      }
+    },
+    paddingTop(i, node) {
+      return 4
+    },
+    paddingBottom(i, node) {
+      return 4
+    },
+    paddingLeft(i, node) {
+      return 6
+    },
+    paddingRight(i, node) {
+      return 6
+    },
   }
 }

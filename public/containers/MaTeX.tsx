@@ -14,15 +14,17 @@ type MaTeXState = {
   documents: DocumentBlock[]
   pdfObjectURL?: string
   autoPreview: boolean
+  previewDelay: number
 } & Pick<HeaderProps, 'title' | 'description'>
 
 export default class MaTeX extends Component<{}, MaTeXState> {
   state: MaTeXState = {
-    title: '',
+    title: process.env.NODE_ENV === 'production' ? '' : '我是大蛋',
     description: [emptyDescription],
     documents: mockedDocuments,
     pdfObjectURL: undefined,
     autoPreview: true,
+    previewDelay: 3,
   }
   static emptyDocumentBlock: DocumentBlock = {
     markdown: ''
@@ -48,8 +50,9 @@ export default class MaTeX extends Component<{}, MaTeXState> {
       })
     })
   }
-  debounceGeneratePdf = debounce(this.generatePDF, 1000)
+  debounceGeneratePdf = debounce(this.generatePDF, 3000)
   componentDidUpdate(_: {}, prevState: MaTeXState) {
+    // compare is needless
     if (
       this.state.autoPreview && (
         !compare(this.state.documents, prevState.documents) ||
@@ -60,9 +63,14 @@ export default class MaTeX extends Component<{}, MaTeXState> {
       this.debounceGeneratePdf()
     }
   }
-  addEmptyDocument = () => {
+  addEmptyDocument = (index: number) => {
+    const { documents } = this.state
     this.setState({
-      documents: this.state.documents.concat(MaTeX.emptyDocumentBlock)
+      documents: [
+        ...documents.slice(0, index+1),
+        MaTeX.emptyDocumentBlock,
+        ...documents.slice(index+1),
+      ]
     })
   }
   updateDocument = (index: number, payload: Partial<DocumentBlock>) => {
@@ -84,6 +92,12 @@ export default class MaTeX extends Component<{}, MaTeXState> {
       ]
     })
   }
+  getDownloadName = () => {
+    const { title } = this.state
+    const now = new Date()
+    const date = [now.getFullYear(), now.getMonth() + 1, now.getDay()].join('-')
+    return `${title || '[未命名]'}-${date}.pdf`
+  }
   render() {
     const {
       documents,
@@ -91,6 +105,7 @@ export default class MaTeX extends Component<{}, MaTeXState> {
       title,
       description,
       autoPreview,
+      previewDelay,
     } = this.state
     return <>
       <div
@@ -104,7 +119,17 @@ export default class MaTeX extends Component<{}, MaTeXState> {
           })}
         />
         自动预览</label>
+        {/* （延时 <input
+          className="preview-delay"
+          type="number"
+          min={1}
+          step={1}
+          value={previewDelay}
+          disabled={!autoPreview}
+          onChange={(e) => this.setState({previewDelay: +e.target.value})}
+        /> 秒） */}
         <button onClick={this.generatePDF}>手动预览</button>
+        <a href={pdfObjectURL} download={this.getDownloadName()}>下载</a>
       </div>
       <div className="main"><div className="documents">
         <Header
@@ -112,19 +137,18 @@ export default class MaTeX extends Component<{}, MaTeXState> {
           onChangeTitle={(title) => this.setState({title})}
           onChangeDescription={(description) => this.setState({description})}
         />
-        {documents.map((d, i) => (
+        {documents.map((d, i) => <div key={i}>
           <Editor
-            key={`editor-${i}`}
             value={d}
             onChange={(payload) => this.updateDocument(i, payload)}
             onRemove={() => this.removeDocument(i)}
           />
-        ))}
-        <button onClick={this.addEmptyDocument}>
-          + 文档块
-        </button>
+          <button onClick={() => this.addEmptyDocument(i)}>
+            + 文档块
+          </button>
+        </div>)}
       </div>
-      <iframe id="pdf" src={pdfObjectURL} frameBorder="0"></iframe></div>
+      <iframe id="pdf" src={pdfObjectURL+"#page=1"} frameBorder="0"></iframe></div>
     </>
   }
 }

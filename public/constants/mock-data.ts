@@ -1,4 +1,5 @@
 import { DocumentBlock } from '.'
+import { addImage } from '../helpers/image'
 
 const image = require('!url-loader!../../media/arkdome.jpg')
 
@@ -23,6 +24,16 @@ var b = 2;
 
 - 无序列表1
 - 无序列表2
+  - 嵌套1
+  - 嵌套2
+  1. 有序嵌套1
+  1. 有序嵌套2
+  1. 有序嵌套3
+  - 嵌套3
+    换行文本
+    - 三重嵌套1
+    - 三重嵌套2
+- 无序列表3
 
 1. 有序列表
 1. 有序列表
@@ -42,6 +53,6 @@ var b = 2;
 export const mockedDocuments: DocumentBlock[] = [
   {
     markdown: markdown,
-    image: image,
+    image: addImage(image),
   }
 ]

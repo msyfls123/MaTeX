@@ -4,8 +4,10 @@ import cloneDeep from 'lodash/cloneDeep'
 import './Header.styl'
 
 type Description = [string, string, string, string]
-// export const emptyDescription: Description = ['1.1.1.1', '张全蛋工程师', '20190302', '发动机主体设计，优化点火方式']
-export const emptyDescription: Description = ['', '', '', '']
+export const emptyDescription: Description =
+  process.env.NODE_ENV === 'production' ?
+  ['', '', '', ''] :
+  ['1.1.1.1', '张全蛋工程师', '20190302', '发动机主体设计，优化点火方式']
 
 export type HeaderProps = {
   title: string

@@ -47,7 +47,7 @@ export default class Editor extends Component<EditorProps> {
         }}
       />
       <Image
-        dataURL={value.image}
+        imgId={value.image}
         setImage={(image) => onChange({image})}
       />
     </div>
