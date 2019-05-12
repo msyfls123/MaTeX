@@ -1,7 +1,7 @@
 import { DocumentBlock } from '.'
-import { addImage } from '../helpers/image'
+// import { addImage } from '../helpers/image'
 
-const image = require('!url-loader!../../media/arkdome.jpg')
+// const image = require('!url-loader!../../media/arkdome.jpg')
 
 const markdown = `
 示例文本，
@@ -53,6 +53,6 @@ var b = 2;
 export const mockedDocuments: DocumentBlock[] = [
   {
     markdown: markdown,
-    image: addImage(image),
+    // image: addImage(image),
   }
 ]

@@ -10,7 +10,7 @@ import { parse } from './markdown'
 import { getImage } from './image'
 
 export function renderDocuments(documents: DocumentBlock[]) {
-  return documents.map((d) => {
+  return documents.map((d, i) => {
     if (typeof d.image !== 'undefined') {
       return {
         columns: [
@@ -18,12 +18,12 @@ export function renderDocuments(documents: DocumentBlock[]) {
           { image: getImage(d.image), fit: [240, 400], width: 240 },
         ],
         columnGap: 20,
-        style: ['document'],
-      }
+        style: ['document'] as any,
+      } as any
     } else {
       return {
         stack: renderBlocks(parse(d.markdown)),
-        style: ['document'],
+        style: ['document'] as any,
       }
     }
   })
@@ -38,22 +38,20 @@ export function render(
   if (title) {
     contents.push({
       text: title,
-      style: ['block', 'h1'],
+      style: ['block', 'h1'] as any,
     })
   }
-  const filteredDescription = description.filter((d) => !!d.join(''))
-  if (filteredDescription.length) {
+  if (description.length) {
     contents.push({
       table: {
         widths: [70, 70, 70, '*'],
-        body: cloneDeep(filteredDescription),
+        body: cloneDeep(description),
       } as unknown as Table,
       layout: tableLayouts.description,
-      style: ['description'],
+      style: ['description'] as any,
     })
   }
-  contents.push(renderDocuments(documents))
-  return contents
+  return contents.concat(renderDocuments(documents))
 }
 
 export function renderBlocks(tokens: Token[]): Content[] {
@@ -79,7 +77,7 @@ export function renderBlocks(tokens: Token[]): Content[] {
   tokens.forEach((token) => {
     switch (token.type) {
       case 'inline':
-        const blockStyles = styles.slice()
+        const blockStyles = styles.slice() as any
         const container = getContainer()
         container.push({
           text: renderInline(token.children),

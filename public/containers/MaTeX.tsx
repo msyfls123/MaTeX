@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { Component, ChangeEvent } from 'react'
 import debounce from 'lodash/debounce'
 import compare from 'react-fast-compare'
 
@@ -7,12 +7,16 @@ import { DocumentBlock } from '../constants'
 import printer from '../helpers/printer'
 import { mockedDocuments } from '../constants/mock-data'
 import { renderDocuments, render } from '../helpers/render'
+import { exportToJSON, loadFromJSON } from '../helpers/converter'
+import { clearImages } from '../helpers/image'
 
 import Header, { HeaderProps, emptyDescription } from '../components/Header'
 
 type MaTeXState = {
   documents: DocumentBlock[]
   pdfObjectURL?: string
+  pageIndex: number[]
+  activeDocumentIndex: number
   autoPreview: boolean
   previewDelay: number
 } & Pick<HeaderProps, 'title' | 'description'>
@@ -22,7 +26,9 @@ export default class MaTeX extends Component<{}, MaTeXState> {
     title: process.env.NODE_ENV === 'production' ? '' : '我是大蛋',
     description: [emptyDescription],
     documents: mockedDocuments,
+    activeDocumentIndex: 0,
     pdfObjectURL: undefined,
+    pageIndex: [],
     autoPreview: true,
     previewDelay: 3,
   }
@@ -43,10 +49,11 @@ export default class MaTeX extends Component<{}, MaTeXState> {
   }
   generatePDF = () => {
     const { documents, title, description } = this.state
-    const content = render(documents, title, description)
-    printer(content).then((url) => {
+    const content = render(documents, title, this.getFilteredDescription())
+    printer(content).then(({ url, pageIndex}) => {
       this.setState({
-        pdfObjectURL: url
+        pdfObjectURL: url,
+        pageIndex,
       })
     })
   }
@@ -80,7 +87,8 @@ export default class MaTeX extends Component<{}, MaTeXState> {
         ...documents.slice(0, index),
         {...documents[index], ...payload},
         ...documents.slice(index+1)
-      ]
+      ],
+      activeDocumentIndex: index,
     })
   }
   removeDocument = (index: number) => {
@@ -96,7 +104,38 @@ export default class MaTeX extends Component<{}, MaTeXState> {
     const { title } = this.state
     const now = new Date()
     const date = [now.getFullYear(), now.getMonth() + 1, now.getDay()].join('-')
-    return `${title || '[未命名]'}-${date}.pdf`
+    return `${title || '[未命名]'}-${date}`
+  }
+  exportMe = () => {
+    const { title, documents } = this.state
+    exportToJSON(title, documents)
+  }
+  loadFile = (e: ChangeEvent) => {
+    const file = (e.target as HTMLInputElement).files[0]
+    const fr = new FileReader()
+    if (file) {
+      fr.onload = () => {
+        try {
+          loadFromJSON(JSON.parse(fr.result as string)).then((data) => {
+            this.setState(data)
+          })
+        } catch (e) {
+          alert(e)
+        }
+      }
+      fr.readAsText(file)
+    }
+  }
+  getFilteredDescription = () => {
+    return this.state.description.filter((d) => !!d.join(''))
+  }
+  getActivePageIndex = () => {
+    const { title, activeDocumentIndex } = this.state
+    let offset = 0
+    const filteredDescription = this.getFilteredDescription()
+    if (title) { offset += 1 }
+    if (filteredDescription.length) { offset += 1 }
+    return offset + activeDocumentIndex
   }
   render() {
     const {
@@ -106,7 +145,9 @@ export default class MaTeX extends Component<{}, MaTeXState> {
       description,
       autoPreview,
       previewDelay,
+      pageIndex,
     } = this.state
+    const activePageIndex = pageIndex[this.getActivePageIndex()] || 1
     return <>
       <div
         className="auto-preview"
@@ -129,7 +170,19 @@ export default class MaTeX extends Component<{}, MaTeXState> {
           onChange={(e) => this.setState({previewDelay: +e.target.value})}
         /> 秒） */}
         <button onClick={this.generatePDF}>手动预览</button>
-        <a href={pdfObjectURL} download={this.getDownloadName()}>下载</a>
+        <a
+          href={pdfObjectURL}
+          download={this.getDownloadName() + '.pdf'}
+        >下载 PDF</a>
+        <a
+          href="javascript:;"
+          onClick={this.exportMe}
+        >下载 JSON</a>
+        导入 JSON：
+        <input
+          type="file"
+          onChange={this.loadFile}
+        />
       </div>
       <div className="main"><div className="documents">
         <Header
@@ -147,8 +200,18 @@ export default class MaTeX extends Component<{}, MaTeXState> {
             + 文档块
           </button>
         </div>)}
+        <button
+          onClick={() => {
+            if(confirm('确认清除所有缓存图片？此操作不可逆！')) {
+              clearImages()
+            }
+          }}
+          style={{
+            float: 'right'
+          }}
+        >清除所有缓存图片</button>
       </div>
-      <iframe id="pdf" src={pdfObjectURL+"#page=1"} frameBorder="0"></iframe></div>
+      <iframe id="pdf" src={`${pdfObjectURL}#page=${activePageIndex}`} frameBorder="0"></iframe></div>
     </>
   }
 }

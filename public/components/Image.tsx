@@ -1,6 +1,10 @@
 import React, { Component, ChangeEventHandler } from 'react'
 
-import { addImage, getImage } from '../helpers/image'
+import {
+  addImage,
+  getImage,
+  removeImage,
+} from '../helpers/image'
 
 import './Image.styl'
 
@@ -16,7 +20,9 @@ export default class Image extends Component<ImageProps> {
     const fr = new FileReader()
     if (file) {
       fr.onload = () => {
-        setImage(addImage(fr.result as string))
+        addImage(fr.result as string).then((id) => {
+          setImage(id)
+        })
       }
       fr.readAsDataURL(file)
     }
@@ -39,6 +45,7 @@ export default class Image extends Component<ImageProps> {
         <img className="image" src={getImage(imgId)}/>
         <a className="remove" onClick={() => {
           if(window.confirm('删除该图片？')) {
+            removeImage(imgId)
             setImage()
           }
         }}>×</a>
