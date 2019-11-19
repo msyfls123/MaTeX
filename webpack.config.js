@@ -3,7 +3,7 @@ const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 
 const publicPath = path.join(__dirname, 'public')
-const distPath = path.join(publicPath, 'dist')
+const distPath = path.join(__dirname, 'dist')
 
 const isProduction = process.env.NODE_ENV === 'production'
 
