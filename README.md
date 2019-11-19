@@ -15,6 +15,7 @@ https://msyfls123.github.io/MaTeX
 - [x] rich-text pagination
 - [x] `webpack` plugin for static files
 - [x] `react` layout with pdf preview and editing
-- [ ] save & load image with `IndexDB`
-- [ ] cache documents in `localStorage` or `IndexDB`
-- [ ] anchor pdf content
+- [x] save & load image with `IndexDB`
+- [x] ~~cache documents in `localStorage` or `IndexDB`~~ JSON file export/import JSON
+- [x] anchor pdf content (by page)
+- [ ] clean code 😂😂😂
