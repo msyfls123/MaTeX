@@ -107,8 +107,8 @@ export default class MaTeX extends Component<{}, MaTeXState> {
     return `${title || '[未命名]'}-${date}`
   }
   exportMe = () => {
-    const { title, documents } = this.state
-    exportToJSON(title, documents)
+    const { title, documents, description } = this.state
+    exportToJSON({title, documents, description})
   }
   loadFile = (e: ChangeEvent) => {
     const file = (e.target as HTMLInputElement).files[0]

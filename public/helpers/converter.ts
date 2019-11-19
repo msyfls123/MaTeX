@@ -1,10 +1,10 @@
 import { DocumentBlock } from '../constants'
 import { preloadImages } from './image'
+import { HeaderProps, emptyDescription } from '../components/Header'
 
 type JSONDataType = {
-  title: string
   documents: DocumentBlock[]
-}
+} & Pick<HeaderProps, 'description' | 'title'>
 
 function getExportTitle(title = '') {
   const now = new Date()
@@ -12,27 +12,20 @@ function getExportTitle(title = '') {
   return `${title || '[未命名]'}-${date}`
 }
 
-export function exportToJSON(
-  title: string,
-  documents: DocumentBlock[]
-) {
-  const data: JSONDataType = {
-    title,
-    documents,
-  }
+export function exportToJSON(data: JSONDataType) {
   const jsonData = JSON.stringify(data)
   const blob = new Blob([jsonData], {type: 'application/json'})
   const url = URL.createObjectURL(blob)
   const a = document.createElement('a');
   a.href        = url
-  a.download    = getExportTitle(title) + '.json'
+  a.download    = getExportTitle(data.title) + '.json'
   a.click()
 }
 
 export function loadFromJSON(
   data: JSONDataType
 ) {
-  const { title, documents } = data
+  const { title, documents, description = [emptyDescription] } = data
   return Promise.all(
     preloadImages(documents.map((d) => d.image))
   ).then((list: Array<number | undefined>) => {
@@ -45,10 +38,10 @@ export function loadFromJSON(
       }
       return acc
     }, [] as DocumentBlock[])
-    console.log(list, resDocuments)
     return {
       title,
-      documents: resDocuments
+      documents: resDocuments,
+      description,
     }
   })
 }

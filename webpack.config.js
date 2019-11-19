@@ -72,7 +72,7 @@ const config = {
   },
   plugins: [
     new HtmlWebpackPlugin({
-      title: '黄博士文档',
+      title: 'MaTeX',
       template: path.join(__dirname, 'template/index.html'),
     })
   ],
