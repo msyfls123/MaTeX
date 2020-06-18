@@ -19,3 +19,4 @@ https://msyfls123.github.io/MaTeX
 - [x] ~~cache documents in `localStorage` or `IndexDB`~~ JSON file export/import JSON
 - [x] anchor pdf content (by page)
 - [ ] clean code 😂😂😂
+- [ ] maybe use [Background Tasks API](https://developer.mozilla.org/en-US/docs/Web/API/Background_Tasks_API#Example) to schedule and accelerate pdf generating
