@@ -28,7 +28,7 @@ dbRequest.onupgradeneeded = function () {
 
 function promisifyRequest<T = {}>(request: IDBRequest, useResult = false) {
   return new Promise<T>((resolve, reject) => {
-    request.onsuccess = useResult ? (e) => resolve((e.target as any).result) : () => resolve()
+    request.onsuccess = useResult ? (e) => resolve((e.target as any).result) : () => resolve(undefined as T)
     request.onerror = reject
   })
 }
@@ -40,11 +40,11 @@ export function add<T>(tableKey: string, data: any) {
   return promisifyRequest<T>(request, true)
 }
 
-export function read(tableKey: string, id: number) {
+export function read<T>(tableKey: string, id: number) {
   const transaction = db.transaction([tableKey])
   const objectStore = transaction.objectStore(tableKey)
   const request = objectStore.get(id)
-  return promisifyRequest(request, true)
+  return promisifyRequest<T>(request, true)
 }
 
 export function update(tableKey: string, id: number, data: any) {

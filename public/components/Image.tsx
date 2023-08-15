@@ -1,12 +1,12 @@
-import React, { Component, ChangeEventHandler } from 'react'
+import './Image.styl'
+
+import React, { ChangeEventHandler, Component } from 'react'
 
 import {
   addImage,
   getImage,
   removeImage,
 } from '../helpers/image'
-
-import './Image.styl'
 
 type ImageProps = {
   imgId?: number
@@ -16,7 +16,7 @@ type ImageProps = {
 export default class Image extends Component<ImageProps> {
   parseImage: ChangeEventHandler = (e) => {
     const { setImage } = this.props
-    const file = (e.target as HTMLInputElement).files[0]
+    const file = (e.target as HTMLInputElement).files?.[0]
     const fr = new FileReader()
     if (file) {
       fr.onload = () => {

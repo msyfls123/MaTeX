@@ -1,8 +1,8 @@
 import {
   add,
-  remove,
-  read,
   clear,
+  read,
+  remove,
 } from './indexdb'
 let uuid = 0
 
@@ -30,7 +30,7 @@ export function getImage(uuid: number) {
 }
 
 export function removeImage(uuid: number) {
-  images[uuid] = undefined
+  delete images[uuid]
   remove(IMAGE_TABLE_KEY, uuid)
 }
 
@@ -40,7 +40,7 @@ export function clearImages() {
 
 export function preloadImages(ids: number[]) {
   return ids.filter(id => !!id).map((id) => {
-    return read(IMAGE_TABLE_KEY, id).then((data: ImageType) => {
+    return read<ImageType>(IMAGE_TABLE_KEY, id).then((data) => {
       if (data) {
         images[id] = data[IMAGE_DATAURI_KEY]
         return id

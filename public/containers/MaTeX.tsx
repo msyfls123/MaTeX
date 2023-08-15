@@ -1,16 +1,15 @@
-import React, { Component, ChangeEvent } from 'react'
 import debounce from 'lodash/debounce'
+import React, { ChangeEvent, Component } from 'react'
 import compare from 'react-fast-compare'
 
 import Editor from '../components/Editor'
+import Header, { HeaderProps, emptyDescription } from '../components/Header'
 import { DocumentBlock } from '../constants'
-import printer from '../helpers/printer'
 import { mockedDocuments } from '../constants/mock-data'
-import { renderDocuments, render } from '../helpers/render'
 import { exportToJSON, loadFromJSON } from '../helpers/converter'
 import { clearImages } from '../helpers/image'
-
-import Header, { HeaderProps, emptyDescription } from '../components/Header'
+import printer from '../helpers/printer'
+import { render, renderDocuments } from '../helpers/render'
 
 type MaTeXState = {
   documents: DocumentBlock[]
@@ -111,7 +110,7 @@ export default class MaTeX extends Component<{}, MaTeXState> {
     exportToJSON({title, documents, description})
   }
   loadFile = (e: ChangeEvent) => {
-    const file = (e.target as HTMLInputElement).files[0]
+    const file = (e.target as HTMLInputElement).files?.[0]
     const fr = new FileReader()
     if (file) {
       fr.onload = () => {

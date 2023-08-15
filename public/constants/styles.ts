@@ -1,4 +1,4 @@
-import { Style, TableLayoutFunctions } from 'pdfmake/build/pdfmake'
+import { CustomTableLayout, Style } from 'pdfmake/interfaces'
 
 export const fonts = {
   SourceHanSans: {
@@ -85,7 +85,7 @@ export const styles: Record<string, Style> = {
   }
 }
 
-export const tableLayouts: Record<string, TableLayoutFunctions> = {
+export const tableLayouts: Record<string, CustomTableLayout> = {
   description: {
     hLineWidth(i, node) {
 			if (i === 0 || i === node.table.body.length) {
@@ -116,7 +116,7 @@ export const tableLayouts: Record<string, TableLayoutFunctions> = {
       }
     },
     vLineWidth(i, node) {
-      if (i === 0 || i === node.table.widths.length) {
+      if (i === 0 || i === node.table.widths?.length) {
         return 2
       } else {
         return 1

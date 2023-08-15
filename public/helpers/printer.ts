@@ -1,51 +1,28 @@
 import pdfMake from 'pdfmake/build/pdfmake'
+import { Content } from 'pdfmake/interfaces'
+
 // @ts-ignore
 import pdfFonts from '../../fonts/vfs_fonts'
-const image = require('!url-loader!../../media/arkdome.jpg')
-
 import {
+  defaultStyle,
   fonts,
   styles,
-  defaultStyle,
 } from '../constants/styles'
+
+const image = require('!url-loader!../../media/arkdome.jpg')
+
 
 let prevPdfObjectUrl: string
 
 pdfMake.vfs = pdfFonts
 pdfMake.fonts = fonts
 
-export default function printer(content?: pdfMake.Content): Promise<{
+export default function printer(content?: Content): Promise<{
   url: string
   pageIndex: number[]
 }> {
   const docDefinition = {
-    content: content || [
-      {
-        columns: [
-          { text: [
-            { text: 'aaa' },
-            { text: 'bbb' },
-          ], width: 200 },
-          { text: '草草草草'.repeat(20), width: '*' },
-        ],
-        columnGap: 10,
-        style: ['example', 'block'],
-      },
-      {
-        style: 'tableExample',
-        table: {
-          width: [200, 'auto'],
-          body: [
-            [{
-              image: image,
-              fit: [200, 400],
-            }, '擦擦擦'.repeat(150)],
-          ]
-        },
-        layout: 'noBorders'
-      },
-      '123'
-    ],
+    content: content!,
     defaultStyle,
     styles,
   }
@@ -65,4 +42,3 @@ export default function printer(content?: pdfMake.Content): Promise<{
     })
   })
 }
-

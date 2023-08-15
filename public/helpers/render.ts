@@ -1,13 +1,13 @@
-import Token from 'markdown-it/lib/token'
-import { Content, Table } from 'pdfmake/build/pdfmake'
+import chunk from 'lodash/chunk'
 import cloneDeep from 'lodash/cloneDeep'
 import without from 'lodash/without'
-import chunk from 'lodash/chunk'
+import Token from 'markdown-it/lib/token'
+import { Content, Table } from 'pdfmake/interfaces'
 
 import { DocumentBlock } from '../constants'
 import { BLOCK_STYLE, tableLayouts } from '../constants/styles'
-import { parse } from './markdown'
 import { getImage } from './image'
+import { parse } from './markdown'
 
 export function renderDocuments(documents: DocumentBlock[]) {
   return documents.map((d, i) => {
@@ -34,7 +34,7 @@ export function render(
   title: string,
   description: string[][],
 ): Content[] {
-  const contents = []
+  const contents: Content[] = []
   if (title) {
     contents.push({
       text: title,
